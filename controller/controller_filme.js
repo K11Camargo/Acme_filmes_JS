@@ -93,8 +93,22 @@ const setAtualizarFilme = async function() {
 }
 
 //Função para excluir um novo Filme
-const setExcluirFilme = async function() {
+const setExcluirFilme = async function(id) {
 
+    let idFilme = id
+
+    if (idFilme == '' || idFilme == undefined || idFilme == isNaN(idFilme) || idFilme == null) {
+        return message.ERROR_INVALID_ID
+    } else {
+
+        let dadosFilme = await filmesDAO.deleteFilme(idFilme)
+
+        if(dadosFilme) {
+            return message.SUCCESS_DELETED_ITEM
+        } else {
+            return message.ERROR_INTERNAL_SERVER_DB
+        }
+    }
 }
 
 //Função para listar todos os Filmes

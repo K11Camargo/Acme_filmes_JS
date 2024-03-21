@@ -132,6 +132,19 @@ app.post('/v2/acmefilmes/filme', cors(), bodyParserJSON, async function (request
     response.json(resultDadosNovoFilme)
 })
 
+app.delete('/v2/acmefilmes/filme/:id', cors(), async function (request, response, next) {
+
+    let idFilme = request.params.id
+
+    let dadosFilme = await controllerFilmes.setExcluirFilme(idFilme)
+
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
+
+})
+
+
+
 //Executa a API e faz ela ficar aguardando requisições
 app.listen(8080, function(){
     console.log("api funcionando");
