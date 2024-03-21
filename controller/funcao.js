@@ -1,15 +1,13 @@
-//Função um
-
 var acmeFilmes = require ('../modulo/filmes.js')
 
-const ListandoFilmes = () => {
-    let listadeFilmes = acmeFilmes.catalogo.filmes
+const listarFilmes = () => {
+    let todosFilmes = acmeFilmes.listaDeFilmes.filmes
     let status = false
     let filmesArray = []
-    let filmesJson = {}
+    let filmeJson = {}
 
-    listadeFilmes.forEach((filme) => {
-        let filmesInfo = {
+    todosFilmes.forEach((filme) => {
+        let filmeInfo = {
             id: filme.id,
             nome: filme.nome,
             sinopse: filme.sinopse,
@@ -21,35 +19,27 @@ const ListandoFilmes = () => {
         }
 
         status = true
-        filmesArray.push(filmesInfo)
-
+        filmesArray.push(filmeInfo)
     })
 
-    filmesJson.filmes = filmesArray
-    if(status){
-        return filmesJson
-    }else{
+    filmeJson.filmes = filmesArray
+
+    if (status) {
+        return filmeJson
+    } else {
         return false
     }
-
 }
 
-console.log(ListandoFilmes())
-
-
-
-//Função dois
-
-
 const buscarFilmesId = (id) => {
-    let listadeFilmes = acmeFilmes.catalogo.filmes
+    let todosFilmes = acmeFilmes.listaDeFilmes.filmes
     let status = false
     let filmesArray = []
     let filmeJson = {}   
     let infoFilmes = {}
     let filmesId = id
 
-    listadeFilmes.forEach((filme) =>{
+    todosFilmes.forEach((filme) =>{
         if (filme.id == filmesId){
             infoFilmes = {
                 id: filme.id,

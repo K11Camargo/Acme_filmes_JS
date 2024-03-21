@@ -1,82 +1,137 @@
-/************************************************************************************
- * Objetivo: arquivo responsael pela manipulação de dados no Banco de dados MYSQL, 
- *      aqui realizamos o CRUD (Create, Read, Update, Delete) utilizando a linguagem SQL
- * Data: 01/02/2024
- * Autor: Kelvinn Camargo
- * Versão: 1.0 
- * 
- ************************************************************************************/
+/*************************************
+* Objetivo: Arquivo responsável pela manipulação de dados no Banco de Dados MySQL,
+* aqui realizamos o CRUD (Create, Read, Update, Delete) utilizando a linguagem SQL.
+* Data: 01/02/2024
+* Autor: Kelvinn Camargo
+* Versão: 1.0
+*************************************/
 
-//Import da biblioteca prisma client
-const { PrismaClient } = require('@prisma/client');
+//Import da biblioteca do prisma client
+const { PrismaClient} = require('@prisma/client')
 
-//Instancia da classe prisma client
-const prisma = new PrismaClient();
+//Instância da classe prisma client
+const prisma = new PrismaClient()
 
-//função para inserir novo filme no banco de dados
-const insertFilme = async function(){
+//Função para inserir um novo filme no Banco de Dados
+const insertFilme = async function(dadosFilme) {
+
+    let sql
+
+    try {
+
+        if( dadosFilme.data_relancamento != ''      &&
+            dadosFilme.data_relancamento != null    &&
+            dadosFilme.data_relancamento != undefined
+        ){
+
+            sql = `insert into tbl_filme (  nome,
+                                            sinopse,
+                                            duracao,
+                                            data_lancamento,
+                                            data_relancamento,
+                                            foto_capa,
+                                            valor_unitario
+            ) values (
+                                            '${dadosFilme.nome}',
+                                            '${dadosFilme.sinopse}',
+                                            '${dadosFilme.duracao}',
+                                            '${dadosFilme.data_lancamento}',
+                                            '${dadosFilme.data_relancamento}',
+                                            '${dadosFilme.foto_capa}',
+                                            '${dadosFilme.valor_unitario}'
+            )`
+
+        } else {
+            sql = `insert into tbl_filme (  nome,
+                                            sinopse,
+                                            duracao,
+                                            data_lancamento,
+                                            data_relancamento,
+                                            foto_capa,
+                                            valor_unitario
+            ) values (
+                                            '${dadosFilme.nome}',
+                                            '${dadosFilme.sinopse}',
+                                            '${dadosFilme.duracao}',
+                                            '${dadosFilme.data_lancamento}',
+                                            null,
+                                            '${dadosFilme.foto_capa}',
+                                            '${dadosFilme.valor_unitario}'
+            )`
+        }
+
+        //$executeRawUnsafe() - serve para executar scripts sem retorno de dados
+        //(insert, update e delete)
+        //$queryRawUnsafe() - serve para executar scripts com retorno de dados (select)
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if (result)
+            return true
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
 }
 
-//Função para atualizar um filme no banco de dados
-const updateFilme = async function(){
+//Função para atualizar um filme no Banco de Dados
+const updateFilme = async function() {
+
 }
 
-//Função para deletar um filme no banco de dados
-const deleteFilme = async function(){
+//Função para excluir um filme no Banco de Dados
+const deleteFilme = async function() {
+
 }
 
-//Função para listar todos os filmes no banco de dados
-const selectAllFilmes = async function(){
+//Função para listar todos os filmes do Banco de Dados
+const selectAllFilmes = async function() {
 
-    let sql = 'select * from tbl_filme';
+    let sql = 'select * from tbl_filme'
 
-    //podemos usar o $queryRawUnsafe(sql)
-    //podemos usar o $queryRaw('select * from tbl_filme')
-    //porem usar sempre o primeiro para facilitar em caso de erro futuro 
-
-    let rsFilmes = await prisma.$queryRawUnsafe(sql);
+    //$queryRawUnsafe(sql)
+    //$queryRaw('select * from tbl_filme')
+    let rsFilmes = await prisma.$queryRawUnsafe(sql)
 
     if(rsFilmes.length > 0)
-        return rsFilmes;
+        return rsFilmes
     else
-        return false;
+        return false
 }
 
-//Função para buscar um filme pelo ID no banco de dados
-const selectByIdFilme = async function(id){
-    try{
-    //script SQL para buscar um filme pelo ID
-    let sql = `select * from tbl_filme where id = ${id}`
 
-    //Encaminha o script SQL acima para o Banco de Dados
-    let rsFilme = await prisma.$queryRawUnsafe(sql);
+//Função para buscar um filmes do Banco de Dados pelo ID
+const selectByIdFilme = async function(id) {
 
-        return rsFilme;
-    }catch(error){
-        return false;
+    try {
+
+        //ScriptSQL para buscar um filme pelo ID
+        let sql = `select * from tbl_filme where id=${id}`
+
+        //Encaminha o script SQL para o Banco de Dados
+        let rsFilme = await prisma.$queryRawUnsafe(sql)
+
+        return rsFilme
+
+    } catch (error) {
+
+        return false
+    }
+        
+}
+
+const selectNomeFilme = async function(nome) {
+
+    try {
+        let sql = `select * from tbl_filme where nome like '%${nome}%'`
+        let rsFilme = await prisma.$queryRawUnsafe(sql)
+        return rsFilme
+    } catch (error) {
+        return false
     }
     
 }
-
-//Função para buscar um filme pelo nome no banco de dados
-const selectByNameFilme = async function(nomeFilme){
-
-    try{
-
-    let sql = `select * from tbl_filme where nome like '%${nomeFilme}%'`
-
-    let rsFilme = await prisma.$queryRawUnsafe(sql);
-
-    return rsFilme;
-    }catch(error){
-        return false;
-    }
-
-
-}
-
-
-
 
 module.exports = {
     insertFilme,
@@ -84,5 +139,5 @@ module.exports = {
     deleteFilme,
     selectAllFilmes,
     selectByIdFilme,
-    selectByNameFilme
+    selectNomeFilme
 }
