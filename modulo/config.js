@@ -19,7 +19,11 @@ const ERROR_INTERNAL_SERVER     = {status:false, status_code:500, message:'Não 
 /**************************************************************************************/
 /***********************   MENSAGENS DE SUCESSO DO PROJETO   ******************************/
 
-const SUCCESS_CREATED_ITEM= {status:true, status_code:201, message:'Item criado com sucesso!!'}
+const SUCCESS_CREATED_ITEM      = {status:true, status_code:201, message:'Item criado com sucesso!!'}
+const SUCCESS_DELETED_ITEM      = {status: true, status_code: 200, message: 'Item exluido com sucesso!!!'}
+const SUCCESS_UPDATE_ITEM       = {status: true, status_code: 200, message: 'Item atualizado com sucesso!!!'}
+
+
 
 /**************************************************************************************/
 
@@ -33,5 +37,7 @@ module.exports = {
     ERROR_INTERNAL_SERVER,
     ERROR_REQUIRED_FIELDS,
     SUCCESS_CREATED_ITEM,
+    SUCCESS_DELETED_ITEM,
+    SUCCESS_UPDATE_ITEM,
     ERROR_CONTENT_TYPE
 }
