@@ -42,6 +42,9 @@ id int not null auto_increment primary key,
 nome varchar(45) not null
 );
 insert into tbl_genero(nome) values("terror");
+insert into tbl_genero(nome) values("ação");
+insert into tbl_genero(nome) values("drama");
+
 
 create table tbl_nacionalidade(
 id int not null auto_increment primary key,
@@ -254,8 +257,9 @@ insert into tbl_filme (
 				1
             );
     
+    select * from tbl_filme where nome like '%${nome}%';
     
- select * from tbl_filme;
+ select * from tbl_genero;
  
 select * from tbl_filme where nome like 'JOKER';
 
