@@ -1,11 +1,10 @@
-/*************************************
+/***********************************************************************************************************
 * Objetivo: Arquivo para realizar as requisições de Filme
 * Data: 08/02/2024
 * Autor: Kelvinn Camargo
 * Versão: 1.0
-*************************************/
-
-/*************************************
+***********************************************************************************************************/
+/***********************************************************************************************************
  *  Para realizar a integração com o Banco de Dados devemos utilizar uma das seguintes bibliotecas:
  *      - SEQUELIZE     - É a biblioteca mais antiga
  *      - PRISMA ORM    - É a biblioteca mais atual (Utilizaremos no projeto)
@@ -17,13 +16,14 @@
  * 
  *      Para iniciar o prisma no projeto, devemos:
  *          npx prisma init
- ************************************/
+ ************************************************************************************************************/
 
-/***********Import dos arquivos de Controller do projeto ************/
+/******************************Import dos arquivos de Controller do projeto *********************************/
 
 const controllerFilmes = require('./controller/controller_filme.js')
+const controllerGeneros = require('./controller/controller_genero.js')
 
-/************************************ */
+/********************************************************************************************************** */
 
 const express       = require('express')
 const cors          = require ('cors')
@@ -41,6 +41,9 @@ app.use((request, response, next) => {
 })
 
 const bodyParserJSON = bodyParser.json()
+
+
+
 
 app.use((request, response, next) => {
 
@@ -102,7 +105,6 @@ app.get('/v2/acmefilmes/filme/:id', cors(), async function(request, response) {
     response.json(dadosFilme)
 })
 
-
 //EndPoint: Retorna os dados filtrando pelo nome dele
 app.get('/v2/acmefilmes/filme', cors(), async function(request, response) {
 
@@ -114,25 +116,22 @@ app.get('/v2/acmefilmes/filme', cors(), async function(request, response) {
     response.json(dadosFilme)
 })
 
+app.post('/v2/acmefilmes/filme',  cors(), bodyParserJSON, async (request, response, next) =>{
 
-app.post('/v2/acmefilmes/filme', cors(), bodyParserJSON, async function (request, response, next){
+    let contentType = request.headers['content-type']
 
-    //Recebe o content-type da requisição 
-    let contentType = request.headers['content-type'];
-
-    console.log(contentType)
-
-    //Recebe todos os dados encaminhados na requisição pelo body
+    //Recebe os dados encaminhados no Body da requisição
     let dadosBody = request.body
 
-    //Encaminha os dados para o controller enviar para o DAO
-    let resultDadosNovoFilme = await controllerFilmes.setInserirNovoFilme(dadosBody)
+    //Encaminha os dados para cotroller inserir no BD
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType)
 
-    response.status(resultDadosNovoFilme.status_code)
-    response.json(resultDadosNovoFilme)
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+
 })
 
-app.delete('/v2/acmefilmes/filme/:id', cors(), async function (request, response, next) {
+app.delete('/v2/filme/acmefilmes/:id', cors(), async function (request, response) {
 
     let idFilme = request.params.id
 
@@ -155,9 +154,52 @@ app.put('/v2/acmefilmes/updateFilme/:id', cors(), bodyParserJSON, async function
     response.json(resultUpdateFilme)
 })
 
+//***************************************************************
+// GENERO
+// **************************************************************
 
 
-//Executa a API e faz ela ficar aguardando requisições
+app.post('/v3/acmefilmes/genero', cors(), bodyParserJSON, async function (request, response){
+
+    let contentType = request.headers['content-type']
+
+    let dadosBody = request.body
+
+    let dadosNovoGenero = await controllerGeneros.setInserirNovoGenero(dadosBody,contentType)
+
+    response.status(dadosNovoGenero.status_code)
+    response.json(dadosNovoGenero)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.listen(8080, function(){
-    console.log("api funcionando");
-});
+    console.log("api ligada paizão")
+})

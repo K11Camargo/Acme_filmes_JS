@@ -1,10 +1,10 @@
-/*************************************
+/***********************************************************************************************************
 * Objetivo: Arquivo responsável pela manipulação de dados no Banco de Dados MySQL,
 * aqui realizamos o CRUD (Create, Read, Update, Delete) utilizando a linguagem SQL.
 * Data: 01/02/2024
 * Autor: Kelvinn Camargo
 * Versão: 1.0
-*************************************/
+***********************************************************************************************************/
 
 //Import da biblioteca do prisma client
 const { PrismaClient} = require('@prisma/client')
@@ -30,7 +30,9 @@ const insertFilme = async function(dadosFilme) {
                                             data_lancamento,
                                             data_relancamento,
                                             foto_capa,
-                                            valor_unitario
+                                            valor_unitario,
+                                            disponibilidade,
+                                            tbl_classificacao_id
             ) values (
                                             '${dadosFilme.nome}',
                                             '${dadosFilme.sinopse}',
@@ -38,7 +40,9 @@ const insertFilme = async function(dadosFilme) {
                                             '${dadosFilme.data_lancamento}',
                                             '${dadosFilme.data_relancamento}',
                                             '${dadosFilme.foto_capa}',
-                                            '${dadosFilme.valor_unitario}'
+                                            '${dadosFilme.valor_unitario}',
+                                            ${dadosFilme.disponibilidade},
+                                            '${dadosFilme.id_classificacao}',
             )`
 
         } else {
@@ -48,7 +52,10 @@ const insertFilme = async function(dadosFilme) {
                                             data_lancamento,
                                             data_relancamento,
                                             foto_capa,
-                                            valor_unitario
+                                            valor_unitario,
+                                            disponibilidade,
+                                            tbl_classificacao_id
+
             ) values (
                                             '${dadosFilme.nome}',
                                             '${dadosFilme.sinopse}',
@@ -56,13 +63,17 @@ const insertFilme = async function(dadosFilme) {
                                             '${dadosFilme.data_lancamento}',
                                             null,
                                             '${dadosFilme.foto_capa}',
-                                            '${dadosFilme.valor_unitario}'
+                                            '${dadosFilme.valor_unitario}',
+                                            ${dadosFilme.disponibilidade},
+                                            '${dadosFilme.id_classificacao}'
+
             )`
         }
 
         //$executeRawUnsafe() - serve para executar scripts sem retorno de dados
         //(insert, update e delete)
         //$queryRawUnsafe() - serve para executar scripts com retorno de dados (select)
+        console.log(sql)
         let result = await prisma.$executeRawUnsafe(sql)
 
         if (result)
@@ -93,7 +104,8 @@ const updateFilme = async function(id, dadosFilme) {
                                         data_lancamento =   '${dadosFilme.data_lancamento}',
                                         data_relancamento = '${dadosFilme.data_relancamento}',
                                         foto_capa =         '${dadosFilme.foto_capa}',
-                                        valor_unitario =    '${dadosFilme.valor_unitario}'
+                                        valor_unitario =    '${dadosFilme.valor_unitario}',
+                                        id_classificacao =  '${dadosFilme.id_classificacao}',
                                         where id =           ${id}`
 
         } else {
@@ -103,7 +115,8 @@ const updateFilme = async function(id, dadosFilme) {
                                         data_lancamento =   '${dadosFilme.data_lancamento}',
                                         data_relancamento = '${dadosFilme.data_relancamento}',
                                         foto_capa =         '${dadosFilme.foto_capa}',
-                                        valor_unitario =    '${dadosFilme.valor_unitario}'
+                                        valor_unitario =    '${dadosFilme.valor_unitario}',
+                                        id_classificacao =  '${dadosFilme.id_classificacao}',
                                         where id =           ${id}`
         }
 
@@ -118,6 +131,7 @@ const updateFilme = async function(id, dadosFilme) {
             return false
     }
 }
+
 //Função para excluir um filme no Banco de Dados
 const deleteFilme = async function(id) {
 
@@ -130,6 +144,7 @@ const deleteFilme = async function(id) {
     }
 
 }
+
 
 //Função para listar todos os filmes do Banco de Dados
 const selectAllFilmes = async function() {
@@ -156,9 +171,9 @@ const selectByIdFilme = async function(id) {
         let sql = `select * from tbl_filme where id=${id}`
 
         //Encaminha o script SQL para o Banco de Dados
-        let rsFilme = await prisma.$queryRawUnsafe(sql)
+        let rsFilmes = await prisma.$queryRawUnsafe(sql)
 
-        return rsFilme
+        return rsFilmes
 
     } catch (error) {
 
@@ -167,17 +182,25 @@ const selectByIdFilme = async function(id) {
         
 }
 
-const selectNomeFilme = async function(nome) {
+
+const selectNomeFilme = async function (nome) {
 
     try {
-        let sql = `select * from tbl_filme where nome like '%${nome}%'`
+
+        let sql = `select * from tbl_filme where nome like '%${nome}%';`
+
         let rsFilme = await prisma.$queryRawUnsafe(sql)
+
         return rsFilme
+
+
     } catch (error) {
+
         return false
     }
-    
+
 }
+
 
 module.exports = {
     insertFilme,
