@@ -10,27 +10,28 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-const insertGenero = async function (dadosGenero) {
+const insertGenero =  async function(dadosGenero) {
+    
+    try {
 
-    let sql
+     let sql = `insert into tbl_genero(nome) values ("${dadosGenero.nome}")`
+            
+        // Executa o script SQL no banco de dados | Devemos usar execute e não query!
+        // Execute deve ser utilizado para insert, update e delete, onde o banco não devolve dados
+        let result = await prisma.$executeRawUnsafe(sql);
 
-    try { 
-
-        sql = `insert into tbl_genero (nome) values ('${dadosGenero.nome}')`
-
-
-        let result = await prisma.$executeRawUnsafe(sql)
-
-        if (result)
-            return true
+        // Validação para verificar se o insert funcionou no banco de dados
+        if(result )
+            return true;
         else
-            return false
+            return false;
 
     } catch (error) {
-        return false
+
+        return false;
+        
     }
 }
-
 const updateGenero = async function (id, dadoAtualizado) {
     let sql
 

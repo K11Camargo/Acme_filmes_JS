@@ -22,6 +22,8 @@
 
 const controllerFilmes = require('./controller/controller_filme.js')
 const controllerGeneros = require('./controller/controller_genero.js')
+const controllerClassificacao = require('./controller/controller_classificacao.js')
+
 
 /********************************************************************************************************** */
 
@@ -41,9 +43,6 @@ app.use((request, response, next) => {
 })
 
 const bodyParserJSON = bodyParser.json()
-
-
-
 
 app.use((request, response, next) => {
 
@@ -158,8 +157,38 @@ app.put('/v2/acmefilmes/updateFilme/:id', cors(), bodyParserJSON, async function
 // GENERO
 // **************************************************************
 
+    
+//EndPoints: Retorna todos os Generos do Banco de Dados
+app.get('/v3/acmefilmes/genero', cors(), async function (request, response, next) {
+    
+    let dadosGeneros = await controllerGeneros.getListarGeneros()
+    
+    //Validação para verificar se existem dados a serem retornados
+    if (dadosGeneros) {
+        response.json(dadosGeneros)
+        response.status(200)
+    } else {
+        response.json({ message: 'Nenhum registro encontrado' })
+        response.status(404)
+    }
+})
 
-app.post('/v3/acmefilmes/genero', cors(), bodyParserJSON, async function (request, response){
+//EndPoints: Retorna o Generos definido pelo ID do Banco de Dados
+app.get('/v3/acmefilmes/genero/:id', cors(), async function(request, response) {
+
+    //Recebe o ID da requisição
+    let idGenero = request.params.id
+
+    //Encaminha o ID para a controller buscar o Genero
+    let dadosGenero = await controllerGeneros.getBuscarGenero(idGenero)
+
+    response.status(dadosGenero.status_code)
+    response.json(dadosGenero)
+})
+
+
+//EndPoints: Insere um novo Genero no Banco de Dados
+app.post('/v3/acmefilmes/genero', cors(), bodyParserJSON, async function (request, response, next){
 
     let contentType = request.headers['content-type']
 
@@ -172,30 +201,68 @@ app.post('/v3/acmefilmes/genero', cors(), bodyParserJSON, async function (reques
 })
 
 
+//***************************************************************
+// CLASSIFICAÇÃO
+//**************************************************************
+
+app.get('/v4/acmefilmes/classificacao', cors(), async function(request, response, next){
+
+    // Chama a função para retornar os dados da classificacao
+    let dadosClassificacao = await controllerClassificacao.getListarClassficacao();
+
+    // Validação para verificar se existem dados
+    if(dadosClassificacao){
+        response.json(dadosClassificacao)
+        response.status(200);
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status()
+    }
+});
+
+app.get('/v4/acmefilmes/classificacao/:id', cors(), async function(request, response, next){
+    // Recebe o id da requisição 
+    let idClassificacao = request.params.id;
+
+    // Solicita para a controller o ator filtrando pelo id
+    let dadosClassificacao = await controllerClassificacao.getListarClassficacaoById(idClassificacao);
+
+     response.status(dadosClassificacao.status_code);
+     response.json(dadosClassificacao);
+   
+});
+
+app.delete('/v4/acmefilmes/classificacao/:id', cors(), async function(request, response, next){
+
+    let idClassificacao = request.params.id
+
+    let resultDados = await controllerClassificacao.setDeleteClassficacao(idClassificacao);
+
+    response.status(resultDados.status_code);
+    response.json(resultDados);
+});
+
+app.post('/v4/acmefilmes/insertclassificacao', cors(), bodyParserJSON, async function(request, response, next){
+
+    // Recebe o content-type da requisição (API deve receber application/json )
+   let contentType = request.headers['content-type'];
+
+   // Recebe os dados encaminhados na requisição do body (JSON)
+   let dadosBody = request.body;
+
+   
+   // Encaminha os dados da requisição para a controller enviar para o banco de dados
+   let resultDados = await controllerClassificacao.setInserirNovaClassificacao(dadosBody, contentType);
+
+   response.status(resultDados.status_code);
+   response.json(resultDados);
+});
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//***************************************************************
+// ATORES
+//**************************************************************
 
 
 

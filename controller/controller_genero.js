@@ -14,51 +14,38 @@ const setInserirNovoGenero = async function (dadosGenero, contentType) {
 
     try {
 
-        //Validação de content-type (apenas application/json)
         if (String(contentType).toLowerCase() == 'application/json') {
 
-            //Cria o objeto JSON para devolver os dados criados na requisição
             let novoGeneroJSON = {}
 
-            //Validação de campos obrigatórios ou com digitação inválida
-            if( dadosGenero.nome == ''               || dadosGenero.nome == undefined             || dadosGenero.nome == null               
-                                                     || dadosGenero.nome.length > 80
+            if( dadosGenero.nome == ''               || dadosGenero.nome == undefined           || dadosGenero.nome.length > 80
             ){
                 return message.ERROR_REQUIRED_FIELDS //400
-
             }else {
 
-                let validateStatus = false
+              let novoGenero = await generosDAO.insertGenero(dadosGenero);
 
-                //Validação para verificar se a variável booleana é verdadeira
-                if(validateStatus){
-
-                    //Encaminha os dados do Filme para o DAO inserir no Banco de Dados
-                    let novoGenero = await filmesDAO.insertFilme(dadosGenero)
-
-                    //Validação para verificar se DAO inseriu os dados do Banco
-                    if(novoGenero){
-
-                    //Cria o JSON de retorno dos dados (201)
-                    novoGeneroJSON.filme       = dadosGenero
-                    novoGeneroJSON.status      = message.SUCCESS_CREATED_ITEM.status
-                    novoGeneroJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
-                    novoGeneroJSON.message     = message.SUCCESS_CREATED_ITEM.message
-                        
-                        return novoGeneroJSON //201
-                    } else {
-                        return message.ERROR_INTERNAL_SERVER_DB //500
-                    }
-                }
-            }
-        } else {
-            return message.ERROR_CONTENT_TYPE //415
-        }
-    } catch(error) {
-        return message.ERROR_INTERNAL_SERVER //500 - Erro na controller
-    }
+              if(novoGenero){
+      
+                  novoGeneroJSON.status = message.SUCCESS_CREATED_ITEM.status;
+                  novoGeneroJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code;
+                  novoGeneroJSON.message = message.SUCCESS_CREATED_ITEM.message;
+                  novoGeneroJSON.genero = dadosGenero;
+      
+                  return novoGeneroJSON; // 201
+              } else{
+                  return message.ERROR_INTERNAL_SERVER_DB; // 500 
+               }
+             }
+          }else{
+              return message.ERROR_CONTENT_TYPE // 415 Erro no content type
+          }
+      } catch(error){
+          return message.ERROR_INTERNAL_SERVER // 500 
+      }
+           
 }
-
+      
 const setAtualizarGenero = async function (id, dadoAtualizado, contentType) {
     try {
         let idGenero = id
