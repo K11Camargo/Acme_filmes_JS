@@ -16,7 +16,6 @@ const prisma = new PrismaClient()
 const insertFilme = async function(dadosFilme) {
 
     let sql
-
     try {
 
         if( dadosFilme.data_relancamento != ''      &&
@@ -76,10 +75,43 @@ const insertFilme = async function(dadosFilme) {
         console.log(sql)
         let result = await prisma.$executeRawUnsafe(sql)
 
-        if (result)
-            return true
-        else
-            return false
+        
+        if(result){
+            let idFilme=await IDFilme()
+            //loop para inserir os generos na tabela intermediária
+            for(let genero of dadosFilme.id_genero){
+                sql=`insert into tbl_filme_genero(
+                        id_filme,
+                        id_genero
+                    ) values(
+                        ${idFilme[0].id},
+                        ${genero}
+                    )`
+                let result = await prisma.$executeRawUnsafe(sql)
+                //enquanto os dados estiverem sendo inseridos o loop vai continuar, caso aconteça algum erro, o código para e retorna falso
+                if(result)
+                    return true
+                else
+                    return false
+            }
+            //loop para inserir os atores na tabela intermediária
+            for(let ator of dadosFilme.id_ator){
+                sql=`insert into tbl_filme_ator(
+                    id_filme,
+                    id_ator
+                    ) values(
+                        ${idFilme[0].id},
+                        ${ator}
+                    )`
+                let result=await prisma.$executeRawUnsafe(sql)
+                //enquanto os dados estiverem sendo inseridos o loop vai continuar, caso aconteça algum erro, o código para e retorna falso
+                if(result)
+                    return true
+                else
+                    return false
+            }
+        }    
+
 
     } catch (error) {
         return false
@@ -202,11 +234,28 @@ const selectNomeFilme = async function (nome) {
 }
 
 
+const IDFilme = async function(){
+    try {
+        let sql = `SELECT id FROM tbl_filme ORDER BY id DESC LIMIT 1`
+
+        let sqlID = await prisma.$queryRawUnsafe(sql)
+
+        return sqlID
+    } catch (error) {
+        return false
+    }
+    
+}
+
+
+
+
 module.exports = {
     insertFilme,
     updateFilme,
     deleteFilme,
     selectAllFilmes,
     selectByIdFilme,
+    IDFilme,
     selectNomeFilme
 }

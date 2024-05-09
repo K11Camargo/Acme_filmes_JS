@@ -99,26 +99,33 @@ const setAtualizarGenero = async function (id, dadoAtualizado, contentType) {
 
 const setExcluirGenero = async function (id) {
 
-    let idGenero = id
+    let idGeneros = id;
 
-    if (idGenero == '' || idGenero == undefined || idGenero == isNaN(idGenero) || idGenero == null) {
-        return message.ERROR_INVALID_ID
-    } else {
-
-        let dadosGenero = await generosDAO.selectByIdGenero(idGenero)
-        let validarId = dadosGenero.length
-
-        if (validarId > 0) {
-
-            dadosGenero = await generosDAO.deleteGenero(idGenero)
-
+    try {
+        
+        if(idGeneros == '' || idGeneros == undefined || isNaN(idGeneros)){
+            return message.ERROR_INVALID_ID;
+        }else{
+            
+            let dadosGenero = await atorDAO.selectByIdGenero(idGeneros) 
+            let validarId = dadosGenero.length 
+    
+            if (validarId > 0) {
+    
+            dadosGenero = await generosDAO.deleteGenero(idGeneros)
+            
             return message.SUCCESS_DELETED_ITEM
-
-        } else {
-            return message.ERROR_NOT_FOUND
-        }
+    
+            } else {
+                return message.ERROR_NOT_FOUND
+            }
     }
+    } catch (error) {
+        return message.ERROR_INTERNAL_SERVER
+    }
+
 }
+
 
 const getListarGeneros = async function () {
 

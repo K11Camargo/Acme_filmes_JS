@@ -23,6 +23,8 @@
 const controllerFilmes = require('./controller/controller_filme.js')
 const controllerGeneros = require('./controller/controller_genero.js')
 const controllerClassificacao = require('./controller/controller_classificacao.js')
+const controllerAtor = require('./controller/controller_ator.js')
+const controllerDiretor = require('./controller/controller_diretor.js')
 
 
 /********************************************************************************************************** */
@@ -73,6 +75,7 @@ app.get('/v1/acmeFilmes/filmes', cors(), async function (request, response, next
         response.status(400)
     }
 })
+
 
 //EndPoints: Versão 2.0 - Retorna os dados do filme do Banco de Dados
 app.get('/v2/acmeFilmes/filmes', cors(), async function (request, response, next) {
@@ -200,6 +203,16 @@ app.post('/v3/acmefilmes/genero', cors(), bodyParserJSON, async function (reques
     response.json(dadosNovoGenero)
 })
 
+app.delete('/v3/acmefilmes/genero/:id', cors(), async function (request, response) {
+
+    let idFilme = request.params.id
+
+    let dadosFilme = await controllerFilmes.setExcluirFilme(idFilme)
+
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
+
+})
 
 //***************************************************************
 // CLASSIFICAÇÃO
@@ -264,6 +277,117 @@ app.post('/v4/acmefilmes/insertclassificacao', cors(), bodyParserJSON, async fun
 // ATORES
 //**************************************************************
 
+app.get('/v5/acmefilmes/ator', cors(), async function (request, response, next) {
+    
+    //Chama a função da controller para retornar todos os filmes
+    let dadosAtor = await controllerAtor.getListarAtores()
+    
+    //Validação para verificar se existem dados a serem retornados
+    if (dadosAtor) {
+        response.json(dadosAtor)
+        response.status(200)
+    } else {
+        response.json({ message: 'Nenhum registro encontrado' })
+        response.status(404)
+    }
+
+});
+
+app.get('/v5/acmefilmes/ator/:id', cors(), async function(request, response, next){
+    // Recebe o id da requisição 
+    let idAtor = request.params.id;
+
+    // Solicita para a controller o ator filtrando pelo id
+    let dadosAtor = await controllerAtor.getBuscarAtor(idAtor);
+
+     response.status(dadosAtor.status_code);
+     response.json(dadosAtor);
+   
+});
+
+app.delete('/v5/acmefilmes/ator/:id', cors(), async function(request, response, next){
+
+    let idAtor = request.params.id
+
+    let resultDados = await controllerAtor.setExcluirAtor(idAtor);
+
+    response.status(resultDados.status_code);
+    response.json(resultDados);
+});
+
+app.post('/v5/acmefilmes/ator',  cors(), bodyParserJSON, async (request, response, next) =>{
+
+    let contentType = request.headers['content-type']
+
+    //Recebe os dados encaminhados no Body da requisição
+    let dadosBody = request.body
+
+    //Encaminha os dados para cotroller inserir no BD
+    let resultDados = await controllerAtor.setInserirNovoAtor(dadosBody, contentType)
+
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+
+});
+
+
+
+//***************************************************************
+// DIRETORES
+//**************************************************************
+
+app.get('/v6/acmefilmes/diretor', cors(), async function (request, response, next) {
+    
+    //Chama a função da controller para retornar todos os filmes
+    let dadosDiretor = await controllerDiretor.getlistarDiretores()
+    
+    //Validação para verificar se existem dados a serem retornados
+    if (dadosDiretor) {
+        response.json(dadosDiretor)
+        response.status(200)
+    } else {
+        response.json({ message: 'Nenhum registro encontrado' })
+        response.status(404)
+    }
+
+});
+
+app.get('/v6/acmefilmes/diretor/:id', cors(), async function(request, response, next){
+    // Recebe o id da requisição 
+    let idDiretor = request.params.id;
+
+    // Solicita para a controller o ator filtrando pelo id
+    let dadosDiretor = await controllerDiretor.getBuscarDiretores(idDiretor);
+
+     response.status(dadosDiretor.status_code);
+     response.json(dadosDiretor);
+   
+});
+
+app.delete('/v6/acmefilmes/diretor/:id', cors(), async function(request, response, next){
+
+    let idDiretor = request.params.id
+
+    let resultDados = await controllerDiretor.setExcluirDiretor(idDiretor);
+
+    response.status(resultDados.status_code);
+    response.json(resultDados);
+});
+
+app.post('/v6/acmefilmes/diretor',  cors(), bodyParserJSON, async (request, response, next) =>{
+
+    let contentType = request.headers['content-type']
+
+    //Recebe os dados encaminhados no Body da requisição
+    let dadosBody = request.body
+
+    //Encaminha os dados para cotroller inserir no BD
+    let resultDados = await controllerDiretor.setInserirNovoDiretor(dadosBody, contentType)
+
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+
+});
 
 
 

@@ -1,12 +1,9 @@
-
 /***********************************************************************************************************
 * Objetivo: Arquivo responsável pelas validações e consistencias de dados de Filme
 * Data: 01/02/2024
 * Autor: Kelvinn Camargo
 * Versão: 1.0
 ***********************************************************************************************************/
-
-
 
 //Import do arquivo de configuração do projeto
 const message = require('../modulo/config.js')
@@ -166,8 +163,7 @@ const setExcluirFilme = async function(id) {
 
         dadosFilme = await filmesDAO.deleteFilme(idFilme)
         
-        return message.SUCESS_DELETE_ITEM
-
+        return message.SUCCESS_DELETED_ITEM
         } else {
             return message.ERROR_NOT_FOUND
         }

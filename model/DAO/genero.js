@@ -60,6 +60,9 @@ const deleteGenero = async function (id) {
 
 }
 
+
+
+
 const selectAllGeneros = async function () {
 
     let sql = 'select * from tbl_genero'
